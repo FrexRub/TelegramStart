@@ -8,7 +8,7 @@ from aiogram.fsm.storage.memory import MemoryStorage
 from pydantic import SecretStr, BaseModel
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-BASE_DIR = Path(__name__).parent.parent.parent
+BASE_DIR = Path(__file__).parent.parent.parent
 
 
 def configure_logging(level: int = logging.INFO) -> None:
@@ -24,7 +24,10 @@ class BotSettings(BaseSettings):
     admin_id: int
 
     model_config = SettingsConfigDict(
-        env_file=BASE_DIR / ".env", env_file_encoding="utf8", extra="ignore"
+        env_file=BASE_DIR / ".env",
+        env_file_encoding="utf-8",
+        extra="ignore",  # игнорирование наличия других полей в .env - файле
+        case_sensitive=False,  # регистронезависимость
     )
 
 
@@ -35,7 +38,8 @@ class Setting(BaseModel):
 setting = Setting()
 
 bot = Bot(
-    setting.bot.bot_token.get_secret_value(),
+    token=setting.bot.bot_token.get_secret_value(),
     default=DefaultBotProperties(parse_mode=ParseMode.HTML),
 )
+
 dp = Dispatcher(storage=MemoryStorage())
