@@ -11,10 +11,14 @@ logger = logging.getLogger(__name__)
 dp.include_router(start_router)
 
 
+async def on_startup():
+    await set_commands()
+
+
 async def main():
     logger.info("Start Bot")
+    dp.startup.register(on_startup)
     await dp.start_polling(bot)
-    await set_commands()
 
 
 if __name__ == "__main__":
