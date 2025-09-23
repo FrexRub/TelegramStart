@@ -9,7 +9,7 @@ router = Router()
 
 @router.message(CommandStart())
 async def cmd_start(message: Message, command: CommandObject):
-    command_arg: str = command.args # https://t.me/your_bot?start=hi -> args="hi"
+    command_arg: str = command.args  # https://t.me/your_bot?start=hi -> args="hi"
     if command_arg:
         await message.answer(
             f"Запуск сообщения по команде /start with command_arg: {command_arg}",
