@@ -6,7 +6,10 @@ from src.core.config import setting
 
 def main_kb(user_telegram_id: int) -> ReplyKeyboardMarkup:
     kb_list = [
-        [KeyboardButton(text="О нас"), KeyboardButton(text="Профиль")],  # строка 1
+        [
+            KeyboardButton(text="Давай инлайн!"),
+            KeyboardButton(text="Профиль"),
+        ],  # строка 1
         [
             KeyboardButton(text="Заполнить анкету"),
             KeyboardButton(text="Каталог"),
