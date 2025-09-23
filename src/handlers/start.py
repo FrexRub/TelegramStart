@@ -1,11 +1,15 @@
+import asyncio
 from aiogram import Router, F
 from aiogram.filters import CommandStart, Command, CommandObject
 from aiogram.types import Message
 from aiogram.types import CallbackQuery
+from aiogram.utils.chat_action import ChatActionSender
 
 from src.utils.make_faker import get_random_person
 from src.keyboards.all_kb import main_kb, create_space_kb, create_rat
-from src.keyboards.inline_kbs import ease_link_kb
+from src.keyboards.inline_kbs import ease_link_kb, create_qst_inline_kb
+from src.utils.make_faker import questions
+from src.core.config import bot
 
 router = Router()
 
@@ -29,6 +33,14 @@ async def cmd_start(message: Message, command: CommandObject):
 async def cmd_start_1(message: Message):
     await message.answer(
         "Запуск сообщения по команде /next", reply_markup=create_space_kb()
+    )
+
+
+@router.message(Command("faq"))
+async def cmd_start_faq(message: Message):
+    await message.answer(
+        "Инлайн клавиатура с вопросами",
+        reply_markup=create_qst_inline_kb(questions=questions),
     )
 
 
@@ -74,3 +86,20 @@ async def back_to_home(callback: CallbackQuery):
 
     # Подтверждаем обработку callback
     await callback.answer()
+
+
+@router.callback_query(F.data.startswith("qst_"))
+async def cmd_query(call: CallbackQuery):
+    await call.answer()
+    qst_id = int(call.data.replace("qst_", ""))
+    qst_data = questions[qst_id]
+    msg_text = (
+        f'Ответ на вопрос {qst_data.get("qst")}\n\n'
+        f'<b>{qst_data.get("answer")}</b>\n\n'
+        f"Выбери другой вопрос:"
+    )
+    async with ChatActionSender(bot=bot, chat_id=call.from_user.id, action="typing"):
+        await asyncio.sleep(2)
+        await call.message.answer(
+            msg_text, reply_markup=create_qst_inline_kb(questions)
+        )

@@ -23,3 +23,19 @@ def ease_link_kb():
         ],
     ]
     return InlineKeyboardMarkup(inline_keyboard=inline_kb_list)
+
+
+def create_qst_inline_kb(questions: dict[int, str]) -> InlineKeyboardMarkup:
+    builder = InlineKeyboardBuilder()
+    # Добавляем кнопки вопросов
+    for question_id, question_data in questions.items():
+        builder.row(
+            InlineKeyboardButton(
+                text=question_data.get("qst"), callback_data=f"qst_{question_id}"
+            )
+        )
+    # Добавляем кнопку "На главную"
+    builder.row(InlineKeyboardButton(text="На главную", callback_data="back_home"))
+    # Настраиваем размер клавиатуры
+    builder.adjust(1)
+    return builder.as_markup()
