@@ -19,7 +19,7 @@ class Form(StatesGroup):
 
 
 @router.message(Command("start_quest"))
-async def start_questionnaire_process(message: Message, state: FSMContext):
+async def start_quest_process(message: Message, state: FSMContext):
     async with ChatActionSender.typing(bot=bot, chat_id=message.chat.id):
         await asyncio.sleep(2)
         await message.answer("Привет. Напиши как тебя зовут: ")
