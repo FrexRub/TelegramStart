@@ -4,6 +4,7 @@ from aiogram.filters import CommandStart, Command, CommandObject
 from aiogram.types import Message
 from aiogram.types import CallbackQuery
 from aiogram.utils.chat_action import ChatActionSender
+from aiogram.fsm.context import FSMContext
 
 from src.utils.make_faker import get_random_person
 from src.keyboards.all_kb import main_kb, create_space_kb, create_rat
@@ -15,7 +16,8 @@ router = Router()
 
 
 @router.message(CommandStart())
-async def cmd_start(message: Message, command: CommandObject):
+async def cmd_start(message: Message, command: CommandObject, state: FSMContext):
+    await state.clear()  # !!! сбрасываем состояние FSM (на случай прерывания сценария)
     command_arg: str = command.args  # https://t.me/your_bot?start=hi -> args="hi"
     if command_arg:
         await message.answer(
