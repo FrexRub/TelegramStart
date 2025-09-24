@@ -98,6 +98,7 @@ async def cmd_query(call: CallbackQuery):
         f'<b>{qst_data.get("answer")}</b>\n\n'
         f"Выбери другой вопрос:"
     )
+    # эммитация печати текста ботом
     async with ChatActionSender(bot=bot, chat_id=call.from_user.id, action="typing"):
         await asyncio.sleep(2)
         await call.message.answer(

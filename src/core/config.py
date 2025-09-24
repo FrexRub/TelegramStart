@@ -4,7 +4,7 @@ import logging
 from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
-from aiogram.fsm.storage.memory import MemoryStorage
+from aiogram.fsm.storage.redis import RedisStorage
 from pydantic import SecretStr, BaseModel
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -31,8 +31,23 @@ class BotSettings(BaseSettings):
     )
 
 
+class RedisSettings(BaseSettings):
+    redis_host: str = "localhost"
+    redis_port: int = 6379
+    redis_db: int = 0
+
+    model_config = SettingsConfigDict(
+        env_file=BASE_DIR / ".env", env_file_encoding="utf8", extra="ignore"
+    )
+
+    @property
+    def url(self):
+        return f"redis://{self.redis_host}:{self.redis_port}/{self.redis_db}"
+
+
 class Setting(BaseModel):
     bot: BotSettings = BotSettings()
+    redis: RedisSettings = RedisSettings()
 
 
 setting = Setting()
@@ -42,4 +57,6 @@ bot = Bot(
     default=DefaultBotProperties(parse_mode=ParseMode.HTML),
 )
 
-dp = Dispatcher(storage=MemoryStorage())
+storage = RedisStorage.from_url(url=setting.redis.url)
+
+dp = Dispatcher(storage=storage)
